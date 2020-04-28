@@ -3,6 +3,14 @@
     <v-row justify="center">
       <v-col lg="6">
         <v-select
+          @change="changeValue"
+          label="Category"
+          v-model="categorySelected"
+          :items="listCategory"
+        >
+        </v-select>
+        <v-select
+          label="Liste of States"
           :value="listStates"
           return-object
           multiple
@@ -14,6 +22,7 @@
     </v-row>
     <v-row>
       <v-col lg="10">
+        <h1>{{ categorySelected }}</h1>
         <Chart
           v-if="loaded"
           :chartData="dataCollection"
@@ -40,23 +49,27 @@ export default {
   },
   data() {
     return {
-      colorList: [],
-      time: [],
-      dataset: [],
-      data: [],
-      loaded: false,
       allData: [],
-      listSelected: [],
+      listCategory: ["positive", "death", "deathIncrease"],
       listStates: [],
+      categorySelected: "",
+      listSelected: [],
+      time: [],
+      data: [],
+      dataset: [],
       datacollection: {},
       chartOptions: {
         responsive: true,
         maintainAspectRatio: false
-      }
+      },
+      colorList: [],
+      loaded: true // load the chart
     };
   },
   methods: {
     changeValue() {
+      const category = this.categorySelected;
+
       this.data = [];
       if (this.listSelected.length !== 0) {
         for (var i = 0; i < this.listSelected.length; i++) {
@@ -65,9 +78,12 @@ export default {
             if (d.state == this.listSelected[i].value) {
               //add the value to the array tab if the name of the state
               // is equal at the value of the v-select value
-              const { positive } = d;
-
-              tab.push(positive);
+              var item = d[category];
+              if (item == null) {
+                tab.push(0);
+              } else {
+                tab.push(item);
+              }
             }
           });
           const length = tab.length;
@@ -84,7 +100,7 @@ export default {
       this.createDataSet();
       this.fillData();
 
-      this.loaded = true;
+      //this.loaded = true;
     },
     fillData() {
       this.dataCollection = {

@@ -11,7 +11,7 @@ export default {
     },
     chartData: {
       type: Object,
-      required: true,
+      //required: true,
       default: () => {}
     },
     options: {
